@@ -38,11 +38,11 @@ OPENAI_MODEL=gpt-4o
 
 ```python
 import asyncio
-from src.workflow import create_workflow
+from src.workflow import create_resume_screening_workflow
 
 async def main():
     # 创建工作流
-    workflow = create_workflow()
+    workflow = create_resume_screening_workflow()
     
     # 准备初始状态
     initial_state = {

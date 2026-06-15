@@ -71,3 +71,62 @@ class TestParserNode:
 
             assert result["resume_text"] == ""
             assert result["error"] is None
+
+
+class TestEvaluatorNode:
+    """测试评分节点"""
+
+    @pytest.mark.asyncio
+    async def test_evaluate_resume_node_success(self):
+        """测试评分节点成功"""
+        from src.nodes.evaluator import evaluate_resume_node
+        from src.models import EvaluationResult, BaseScore, BonusScore, DimensionScore
+
+        state = {
+            "resume_text": "姓名：张三\n项目经历：量化CTA策略开发",
+            "threshold": 70.0,
+            "evaluation": None,
+            "error": None
+        }
+
+        # Mock the evaluate_resume function
+        mock_evaluation = EvaluationResult(
+            candidate_name="张三",
+            base_score=BaseScore(
+                project_experience=DimensionScore(dimension="项目经历", score=20, max_score=30, reasoning="有量化项目"),
+                internship_experience=DimensionScore(dimension="实习经历", score=15, max_score=25, reasoning="实习经验一般"),
+                tech_stack=DimensionScore(dimension="技术栈", score=18, max_score=25, reasoning="技术栈合理"),
+                research_experience=DimensionScore(dimension="科研经历", score=10, max_score=20, reasoning="无科研"),
+                total_base_score=63.0
+            ),
+            bonus_score=BonusScore(competitions=[], bonus_points=0, reasoning="无竞赛"),
+            final_score=63.0,
+            passed_screening=False
+        )
+
+        with patch('src.nodes.evaluator.evaluate_resume', return_value=mock_evaluation):
+            result = await evaluate_resume_node(state)
+
+            assert result["evaluation"] == mock_evaluation
+            assert result["error"] is None
+            assert result["evaluation"].candidate_name == "张三"
+            assert result["evaluation"].final_score == 63.0
+
+    @pytest.mark.asyncio
+    async def test_evaluate_resume_node_error(self):
+        """测试评分节点失败"""
+        from src.nodes.evaluator import evaluate_resume_node
+
+        state = {
+            "resume_text": "invalid resume",
+            "threshold": 70.0,
+            "evaluation": None,
+            "error": None
+        }
+
+        with patch('src.nodes.evaluator.evaluate_resume', side_effect=Exception("API error")):
+            result = await evaluate_resume_node(state)
+
+            assert result["evaluation"] is None
+            assert "Error" in result["error"]
+            assert "API error" in result["error"]

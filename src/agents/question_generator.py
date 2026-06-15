@@ -73,7 +73,11 @@ def create_question_generator_agent() -> Agent[None, InterviewQuestions]:
     settings = get_settings()
 
     return Agent(
-        model=OpenAIModel(settings.openai_model),
+        model=OpenAIModel(
+            settings.openai_model,
+            base_url=settings.openai_base_url,
+            api_key=settings.openai_api_key
+        ),
         result_type=InterviewQuestions,
         system_prompt=QUESTION_GENERATOR_SYSTEM_PROMPT,
     )

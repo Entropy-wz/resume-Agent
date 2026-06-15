@@ -7,8 +7,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
-    # API Configuration
+    # API Configuration (支持OpenAI兼容接口，如阿里云通义千问)
     openai_api_key: str
+    openai_base_url: str = "https://api.openai.com/v1"  # 可配置为兼容接口
     openai_model: str = "gpt-4o-mini"
 
     # Scoring Configuration

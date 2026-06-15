@@ -85,7 +85,11 @@ def create_evaluator_agent() -> Agent[None, EvaluationResult]:
     settings = get_settings()
 
     return Agent(
-        model=OpenAIModel(settings.openai_model),
+        model=OpenAIModel(
+            settings.openai_model,
+            base_url=settings.openai_base_url,
+            api_key=settings.openai_api_key
+        ),
         result_type=EvaluationResult,
         system_prompt=EVALUATOR_SYSTEM_PROMPT,
     )

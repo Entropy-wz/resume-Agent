@@ -1,4 +1,5 @@
 from datetime import datetime
+import pytest
 from src.models import (
     DimensionScore,
     BaseScore,
@@ -138,3 +139,46 @@ def test_interview_questions_collection():
     assert len(questions.advanced_questions) == 2
     assert all(q.level == "basic" for q in questions.basic_questions)
     assert all(q.level == "advanced" for q in questions.advanced_questions)
+
+
+def test_dimension_score_validation():
+    """测试维度评分验证"""
+    # 测试score不能超过max_score
+    with pytest.raises(ValueError, match="cannot exceed max_score"):
+        DimensionScore(
+            dimension="项目",
+            score=35.0,
+            max_score=30.0,
+            reasoning="测试"
+        )
+
+    # 测试reasoning不能为空
+    with pytest.raises(ValueError):
+        DimensionScore(
+            dimension="项目",
+            score=25.0,
+            max_score=30.0,
+            reasoning=""
+        )
+
+
+def test_base_score_validation():
+    """测试基础分数总分验证"""
+    # 测试total不等于各维度之和
+    with pytest.raises(ValueError, match="must equal sum"):
+        BaseScore(
+            project_experience=DimensionScore(
+                dimension="项目", score=25.0, max_score=30.0, reasoning="优秀"
+            ),
+            internship_experience=DimensionScore(
+                dimension="实习", score=20.0, max_score=25.0, reasoning="良好"
+            ),
+            tech_stack=DimensionScore(
+                dimension="技术", score=22.0, max_score=25.0, reasoning="扎实"
+            ),
+            research_experience=DimensionScore(
+                dimension="科研", score=15.0, max_score=20.0, reasoning="有潜力"
+            ),
+            total_base_score=90.0  # 错误：实际是82.0
+        )
+

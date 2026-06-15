@@ -1,6 +1,4 @@
 # tests/test_workflow.py
-import pytest
-from typing import Dict, Any
 
 
 class TestWorkflowConditional:
@@ -10,9 +8,7 @@ class TestWorkflowConditional:
         """测试应该生成题目的情况"""
         from src.workflow import should_generate_questions
 
-        state = {
-            "should_generate_questions": True
-        }
+        state = {"should_generate_questions": True}
 
         result = should_generate_questions(state)
         assert result == "generate_questions"
@@ -21,9 +17,7 @@ class TestWorkflowConditional:
         """测试不应该生成题目的情况"""
         from src.workflow import should_generate_questions
 
-        state = {
-            "should_generate_questions": False
-        }
+        state = {"should_generate_questions": False}
 
         result = should_generate_questions(state)
         assert result == "end"
@@ -51,8 +45,8 @@ class TestWorkflowCreation:
         assert workflow is not None
 
         # 验证workflow有invoke方法（编译后的图）
-        assert hasattr(workflow, 'invoke')
-        assert hasattr(workflow, 'get_graph')
+        assert hasattr(workflow, "invoke")
+        assert hasattr(workflow, "get_graph")
 
     def test_workflow_has_correct_nodes(self):
         """测试工作流包含正确的节点"""
@@ -89,5 +83,7 @@ class TestWorkflowCreation:
         assert len(edges) > 0
 
         # 验证有条件边从check_threshold出发
-        conditional_edges = [e for e in edges if hasattr(e, 'source') and e.source == "check_threshold"]
+        conditional_edges = [
+            e for e in edges if hasattr(e, "source") and e.source == "check_threshold"
+        ]
         assert len(conditional_edges) > 0

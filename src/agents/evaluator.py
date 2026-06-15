@@ -1,10 +1,8 @@
 # src/agents/evaluator.py
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
-from src.models import EvaluationResult, DimensionScore, BaseScore, BonusScore
+from src.models import EvaluationResult
 from src.config import get_settings
-from datetime import datetime
-
 
 # 评分Agent的系统提示词
 EVALUATOR_SYSTEM_PROMPT = """

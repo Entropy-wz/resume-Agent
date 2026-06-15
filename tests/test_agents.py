@@ -67,10 +67,10 @@ async def test_evaluate_resume_scoring_logic():
 
     # 验证总分等于各维度之和
     total = (
-        result.base_score.project_experience.score +
-        result.base_score.internship_experience.score +
-        result.base_score.tech_stack.score +
-        result.base_score.research_experience.score
+        result.base_score.project_experience.score
+        + result.base_score.internship_experience.score
+        + result.base_score.tech_stack.score
+        + result.base_score.research_experience.score
     )
     assert abs(result.base_score.total_base_score - total) < 0.1
 
@@ -146,7 +146,9 @@ async def test_generate_questions_relevance():
 
     # 验证问题与简历内容相关
     resume_keywords = ["高频交易", "延迟", "优化", "C++", "无锁", "内存池"]
-    all_questions_text = " ".join([q.question for q in questions.basic_questions + questions.advanced_questions])
+    all_questions_text = " ".join(
+        [q.question for q in questions.basic_questions + questions.advanced_questions]
+    )
 
     # 至少有一些关键词出现在问题中
     relevant_count = sum(1 for keyword in resume_keywords if keyword in all_questions_text)

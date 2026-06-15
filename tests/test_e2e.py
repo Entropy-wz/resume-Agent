@@ -4,17 +4,16 @@
 注意：这些测试需要真实的OpenAI API密钥，会产生API调用费用
 如果没有配置API密钥，测试将被跳过
 """
+
 import pytest
 import os
-from src.workflow import create_workflow
+from src.workflow import create_resume_screening_workflow
 from src.models import EvaluationResult, InterviewQuestions
-
 
 # 检查是否有API密钥
 HAS_API_KEY = bool(os.getenv("OPENAI_API_KEY"))
 skip_without_api = pytest.mark.skipif(
-    not HAS_API_KEY,
-    reason="需要OPENAI_API_KEY环境变量才能运行集成测试"
+    not HAS_API_KEY, reason="需要OPENAI_API_KEY环境变量才能运行集成测试"
 )
 
 
@@ -24,7 +23,7 @@ async def test_complete_workflow_with_mock_resume():
     """测试完整工作流（使用模拟简历文本）"""
 
     # 创建工作流
-    workflow = create_workflow()
+    workflow = create_resume_screening_workflow()
 
     # 模拟简历文本（不需要真实PDF）
     mock_resume_text = """
@@ -88,14 +87,16 @@ async def test_complete_workflow_with_mock_resume():
 
     # 验证评分逻辑
     base_total = (
-        evaluation.base_score.project_experience.score +
-        evaluation.base_score.internship_experience.score +
-        evaluation.base_score.tech_stack.score +
-        evaluation.base_score.research_experience.score
+        evaluation.base_score.project_experience.score
+        + evaluation.base_score.internship_experience.score
+        + evaluation.base_score.tech_stack.score
+        + evaluation.base_score.research_experience.score
     )
     assert abs(base_total - evaluation.base_score.total_base_score) < 0.01, "基础分总和不一致"
 
-    expected_final = evaluation.base_score.total_base_score + evaluation.bonus_score.competition_bonus.score
+    expected_final = (
+        evaluation.base_score.total_base_score + evaluation.bonus_score.competition_bonus.score
+    )
     assert abs(expected_final - evaluation.final_score) < 0.01, "最终分数计算错误"
 
     # 如果通过初筛，应该有面试问题
@@ -103,8 +104,12 @@ async def test_complete_workflow_with_mock_resume():
         questions = final_state.get("questions")
         assert questions is not None, "通过初筛应该生成面试问题"
         assert isinstance(questions, InterviewQuestions), "面试问题类型错误"
-        assert len(questions.basic_questions) == 2, f"应该有2个基础题，实际有{len(questions.basic_questions)}个"
-        assert 2 <= len(questions.advanced_questions) <= 3, f"应该有2-3个进阶题，实际有{len(questions.advanced_questions)}个"
+        assert (
+            len(questions.basic_questions) == 2
+        ), f"应该有2个基础题，实际有{len(questions.basic_questions)}个"
+        assert (
+            2 <= len(questions.advanced_questions) <= 3
+        ), f"应该有2-3个进阶题，实际有{len(questions.advanced_questions)}个"
     else:
         # 如果没通过初筛，不应该有面试问题
         questions = final_state.get("questions")

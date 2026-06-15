@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     # API Configuration
     openai_api_key: str
-    model_name: str = "gpt-4o-mini"
+    openai_model: str = "gpt-4o-mini"
 
     # Scoring Configuration
     min_score_threshold: float = 70.0

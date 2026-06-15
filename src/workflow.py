@@ -55,10 +55,7 @@ def create_resume_screening_workflow():
     workflow.add_conditional_edges(
         "check_threshold",
         should_generate_questions,
-        {
-            "generate_questions": "generate_questions",
-            "end": END
-        }
+        {"generate_questions": "generate_questions", "end": END},
     )
 
     # 生成题目后结束

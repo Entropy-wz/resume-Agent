@@ -14,26 +14,21 @@ def check_threshold_node(state: Dict[str, Any]) -> Dict[str, Any]:
     """
     try:
         evaluation = state.get("evaluation")
-        threshold = state.get("threshold", 70.0)
 
         if evaluation is None:
             return {
                 **state,
                 "should_generate_questions": False,
-                "error": "Error: evaluation is None"
+                "error": "Error: evaluation is None",
             }
 
         # 检查是否通过初筛
         should_generate = evaluation.passed_screening
 
-        return {
-            **state,
-            "should_generate_questions": should_generate,
-            "error": None
-        }
+        return {**state, "should_generate_questions": should_generate, "error": None}
     except Exception as e:
         return {
             **state,
             "should_generate_questions": False,
-            "error": f"Error checking threshold: {str(e)}"
+            "error": f"Error checking threshold: {str(e)}",
         }

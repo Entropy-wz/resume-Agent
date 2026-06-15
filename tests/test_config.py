@@ -1,8 +1,6 @@
 """Tests for configuration management."""
 
-import os
-import pytest
-from src.config import Settings, get_settings
+from src.config import Settings
 
 
 def test_settings_from_env(monkeypatch):

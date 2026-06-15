@@ -4,7 +4,6 @@ from pydantic_ai.models.openai import OpenAIModel
 from src.models import InterviewQuestions, EvaluationResult
 from src.config import get_settings
 
-
 # 问题生成Agent的系统提示词
 QUESTION_GENERATOR_SYSTEM_PROMPT = """
 你是一个专业的量化岗位面试官，负责根据候选人的简历和评估结果生成针对性的面试问题。
@@ -80,10 +79,7 @@ def create_question_generator_agent() -> Agent[None, InterviewQuestions]:
     )
 
 
-async def generate_questions(
-    resume_text: str,
-    evaluation: EvaluationResult
-) -> InterviewQuestions:
+async def generate_questions(resume_text: str, evaluation: EvaluationResult) -> InterviewQuestions:
     """
     生成面试问题
 

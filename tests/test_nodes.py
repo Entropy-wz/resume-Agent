@@ -1,7 +1,6 @@
 # tests/test_nodes.py
 import pytest
 from unittest.mock import Mock, patch
-from typing import Dict, Any
 
 
 class TestParserNode:
@@ -12,18 +11,14 @@ class TestParserNode:
         from src.nodes.parser import parse_resume_node
 
         # Mock state with PDF path
-        state = {
-            "pdf_path": "test.pdf",
-            "resume_text": None,
-            "error": None
-        }
+        state = {"pdf_path": "test.pdf", "resume_text": None, "error": None}
 
         # Mock PyPDFLoader
-        with patch('src.nodes.parser.PyPDFLoader') as mock_loader:
+        with patch("src.nodes.parser.PyPDFLoader") as mock_loader:
             mock_instance = Mock()
             mock_instance.load.return_value = [
                 Mock(page_content="Page 1 content"),
-                Mock(page_content="Page 2 content")
+                Mock(page_content="Page 2 content"),
             ]
             mock_loader.return_value = mock_instance
 
@@ -37,13 +32,9 @@ class TestParserNode:
         """测试PDF解析失败"""
         from src.nodes.parser import parse_resume_node
 
-        state = {
-            "pdf_path": "nonexistent.pdf",
-            "resume_text": None,
-            "error": None
-        }
+        state = {"pdf_path": "nonexistent.pdf", "resume_text": None, "error": None}
 
-        with patch('src.nodes.parser.PyPDFLoader') as mock_loader:
+        with patch("src.nodes.parser.PyPDFLoader") as mock_loader:
             mock_loader.side_effect = Exception("File not found")
 
             result = parse_resume_node(state)
@@ -56,13 +47,9 @@ class TestParserNode:
         """测试空PDF"""
         from src.nodes.parser import parse_resume_node
 
-        state = {
-            "pdf_path": "empty.pdf",
-            "resume_text": None,
-            "error": None
-        }
+        state = {"pdf_path": "empty.pdf", "resume_text": None, "error": None}
 
-        with patch('src.nodes.parser.PyPDFLoader') as mock_loader:
+        with patch("src.nodes.parser.PyPDFLoader") as mock_loader:
             mock_instance = Mock()
             mock_instance.load.return_value = []
             mock_loader.return_value = mock_instance
@@ -86,25 +73,33 @@ class TestEvaluatorNode:
             "resume_text": "姓名：张三\n项目经历：量化CTA策略开发",
             "threshold": 70.0,
             "evaluation": None,
-            "error": None
+            "error": None,
         }
 
         # Mock the evaluate_resume function
         mock_evaluation = EvaluationResult(
             candidate_name="张三",
             base_score=BaseScore(
-                project_experience=DimensionScore(dimension="项目经历", score=20, max_score=30, reasoning="有量化项目"),
-                internship_experience=DimensionScore(dimension="实习经历", score=15, max_score=25, reasoning="实习经验一般"),
-                tech_stack=DimensionScore(dimension="技术栈", score=18, max_score=25, reasoning="技术栈合理"),
-                research_experience=DimensionScore(dimension="科研经历", score=10, max_score=20, reasoning="无科研"),
-                total_base_score=63.0
+                project_experience=DimensionScore(
+                    dimension="项目经历", score=20, max_score=30, reasoning="有量化项目"
+                ),
+                internship_experience=DimensionScore(
+                    dimension="实习经历", score=15, max_score=25, reasoning="实习经验一般"
+                ),
+                tech_stack=DimensionScore(
+                    dimension="技术栈", score=18, max_score=25, reasoning="技术栈合理"
+                ),
+                research_experience=DimensionScore(
+                    dimension="科研经历", score=10, max_score=20, reasoning="无科研"
+                ),
+                total_base_score=63.0,
             ),
             bonus_score=BonusScore(competitions=[], bonus_points=0, reasoning="无竞赛"),
             final_score=63.0,
-            passed_screening=False
+            passed_screening=False,
         )
 
-        with patch('src.nodes.evaluator.evaluate_resume', return_value=mock_evaluation):
+        with patch("src.nodes.evaluator.evaluate_resume", return_value=mock_evaluation):
             result = await evaluate_resume_node(state)
 
             assert result["evaluation"] == mock_evaluation
@@ -121,10 +116,10 @@ class TestEvaluatorNode:
             "resume_text": "invalid resume",
             "threshold": 70.0,
             "evaluation": None,
-            "error": None
+            "error": None,
         }
 
-        with patch('src.nodes.evaluator.evaluate_resume', side_effect=Exception("API error")):
+        with patch("src.nodes.evaluator.evaluate_resume", side_effect=Exception("API error")):
             result = await evaluate_resume_node(state)
 
             assert result["evaluation"] is None
@@ -143,22 +138,30 @@ class TestCheckerNode:
         evaluation = EvaluationResult(
             candidate_name="张三",
             base_score=BaseScore(
-                project_experience=DimensionScore(dimension="项目经历", score=25, max_score=30, reasoning="优秀"),
-                internship_experience=DimensionScore(dimension="实习经历", score=20, max_score=25, reasoning="良好"),
-                tech_stack=DimensionScore(dimension="技术栈", score=20, max_score=25, reasoning="扎实"),
-                research_experience=DimensionScore(dimension="科研经历", score=15, max_score=20, reasoning="不错"),
-                total_base_score=80.0
+                project_experience=DimensionScore(
+                    dimension="项目经历", score=25, max_score=30, reasoning="优秀"
+                ),
+                internship_experience=DimensionScore(
+                    dimension="实习经历", score=20, max_score=25, reasoning="良好"
+                ),
+                tech_stack=DimensionScore(
+                    dimension="技术栈", score=20, max_score=25, reasoning="扎实"
+                ),
+                research_experience=DimensionScore(
+                    dimension="科研经历", score=15, max_score=20, reasoning="不错"
+                ),
+                total_base_score=80.0,
             ),
             bonus_score=BonusScore(competitions=["数学建模"], bonus_points=5, reasoning="有竞赛"),
             final_score=85.0,
-            passed_screening=True
+            passed_screening=True,
         )
 
         state = {
             "evaluation": evaluation,
             "threshold": 70.0,
             "should_generate_questions": None,
-            "error": None
+            "error": None,
         }
 
         result = check_threshold_node(state)
@@ -174,22 +177,30 @@ class TestCheckerNode:
         evaluation = EvaluationResult(
             candidate_name="李四",
             base_score=BaseScore(
-                project_experience=DimensionScore(dimension="项目经历", score=15, max_score=30, reasoning="一般"),
-                internship_experience=DimensionScore(dimension="实习经历", score=10, max_score=25, reasoning="较少"),
-                tech_stack=DimensionScore(dimension="技术栈", score=12, max_score=25, reasoning="基础"),
-                research_experience=DimensionScore(dimension="科研经历", score=5, max_score=20, reasoning="无"),
-                total_base_score=42.0
+                project_experience=DimensionScore(
+                    dimension="项目经历", score=15, max_score=30, reasoning="一般"
+                ),
+                internship_experience=DimensionScore(
+                    dimension="实习经历", score=10, max_score=25, reasoning="较少"
+                ),
+                tech_stack=DimensionScore(
+                    dimension="技术栈", score=12, max_score=25, reasoning="基础"
+                ),
+                research_experience=DimensionScore(
+                    dimension="科研经历", score=5, max_score=20, reasoning="无"
+                ),
+                total_base_score=42.0,
             ),
             bonus_score=BonusScore(competitions=[], bonus_points=0, reasoning="无竞赛"),
             final_score=42.0,
-            passed_screening=False
+            passed_screening=False,
         )
 
         state = {
             "evaluation": evaluation,
             "threshold": 70.0,
             "should_generate_questions": None,
-            "error": None
+            "error": None,
         }
 
         result = check_threshold_node(state)
@@ -205,7 +216,7 @@ class TestCheckerNode:
             "evaluation": None,
             "threshold": 70.0,
             "should_generate_questions": None,
-            "error": None
+            "error": None,
         }
 
         result = check_threshold_node(state)
@@ -227,38 +238,60 @@ class TestGeneratorNode:
         evaluation = EvaluationResult(
             candidate_name="张三",
             base_score=BaseScore(
-                project_experience=DimensionScore(dimension="项目经历", score=25, max_score=30, reasoning="优秀"),
-                internship_experience=DimensionScore(dimension="实习经历", score=20, max_score=25, reasoning="良好"),
-                tech_stack=DimensionScore(dimension="技术栈", score=20, max_score=25, reasoning="扎实"),
-                research_experience=DimensionScore(dimension="科研经历", score=15, max_score=20, reasoning="不错"),
-                total_base_score=80.0
+                project_experience=DimensionScore(
+                    dimension="项目经历", score=25, max_score=30, reasoning="优秀"
+                ),
+                internship_experience=DimensionScore(
+                    dimension="实习经历", score=20, max_score=25, reasoning="良好"
+                ),
+                tech_stack=DimensionScore(
+                    dimension="技术栈", score=20, max_score=25, reasoning="扎实"
+                ),
+                research_experience=DimensionScore(
+                    dimension="科研经历", score=15, max_score=20, reasoning="不错"
+                ),
+                total_base_score=80.0,
             ),
             bonus_score=BonusScore(competitions=["数学建模"], bonus_points=5, reasoning="有竞赛"),
             final_score=85.0,
-            passed_screening=True
+            passed_screening=True,
         )
 
         state = {
             "resume_text": "姓名：张三\n项目经历：量化CTA策略开发",
             "evaluation": evaluation,
             "questions": None,
-            "error": None
+            "error": None,
         }
 
         # Mock the generate_questions function
         mock_questions = InterviewQuestions(
             candidate_name="张三",
             basic_questions=[
-                InterviewQuestion(level="basic", question="问题1", related_project="项目1", focus_area="技术细节"),
-                InterviewQuestion(level="basic", question="问题2", related_project="项目1", focus_area="实现思路")
+                InterviewQuestion(
+                    level="basic", question="问题1", related_project="项目1", focus_area="技术细节"
+                ),
+                InterviewQuestion(
+                    level="basic", question="问题2", related_project="项目1", focus_area="实现思路"
+                ),
             ],
             advanced_questions=[
-                InterviewQuestion(level="advanced", question="问题3", related_project="项目1", focus_area="系统设计"),
-                InterviewQuestion(level="advanced", question="问题4", related_project="项目1", focus_area="优化方案")
-            ]
+                InterviewQuestion(
+                    level="advanced",
+                    question="问题3",
+                    related_project="项目1",
+                    focus_area="系统设计",
+                ),
+                InterviewQuestion(
+                    level="advanced",
+                    question="问题4",
+                    related_project="项目1",
+                    focus_area="优化方案",
+                ),
+            ],
         )
 
-        with patch('src.nodes.generator.generate_questions', return_value=mock_questions):
+        with patch("src.nodes.generator.generate_questions", return_value=mock_questions):
             result = await generate_questions_node(state)
 
             assert result["questions"] == mock_questions
@@ -275,25 +308,33 @@ class TestGeneratorNode:
         evaluation = EvaluationResult(
             candidate_name="张三",
             base_score=BaseScore(
-                project_experience=DimensionScore(dimension="项目经历", score=25, max_score=30, reasoning="优秀"),
-                internship_experience=DimensionScore(dimension="实习经历", score=20, max_score=25, reasoning="良好"),
-                tech_stack=DimensionScore(dimension="技术栈", score=20, max_score=25, reasoning="扎实"),
-                research_experience=DimensionScore(dimension="科研经历", score=15, max_score=20, reasoning="不错"),
-                total_base_score=80.0
+                project_experience=DimensionScore(
+                    dimension="项目经历", score=25, max_score=30, reasoning="优秀"
+                ),
+                internship_experience=DimensionScore(
+                    dimension="实习经历", score=20, max_score=25, reasoning="良好"
+                ),
+                tech_stack=DimensionScore(
+                    dimension="技术栈", score=20, max_score=25, reasoning="扎实"
+                ),
+                research_experience=DimensionScore(
+                    dimension="科研经历", score=15, max_score=20, reasoning="不错"
+                ),
+                total_base_score=80.0,
             ),
             bonus_score=BonusScore(competitions=[], bonus_points=0, reasoning="无"),
             final_score=80.0,
-            passed_screening=True
+            passed_screening=True,
         )
 
         state = {
             "resume_text": "invalid",
             "evaluation": evaluation,
             "questions": None,
-            "error": None
+            "error": None,
         }
 
-        with patch('src.nodes.generator.generate_questions', side_effect=Exception("API error")):
+        with patch("src.nodes.generator.generate_questions", side_effect=Exception("API error")):
             result = await generate_questions_node(state)
 
             assert result["questions"] is None

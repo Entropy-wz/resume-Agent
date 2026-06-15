@@ -20,14 +20,6 @@ async def evaluate_resume_node(state: Dict[str, Any]) -> Dict[str, Any]:
         # 调用评分Agent
         evaluation = await evaluate_resume(resume_text, threshold)
 
-        return {
-            **state,
-            "evaluation": evaluation,
-            "error": None
-        }
+        return {**state, "evaluation": evaluation, "error": None}
     except Exception as e:
-        return {
-            **state,
-            "evaluation": None,
-            "error": f"Error evaluating resume: {str(e)}"
-        }
+        return {**state, "evaluation": None, "error": f"Error evaluating resume: {str(e)}"}

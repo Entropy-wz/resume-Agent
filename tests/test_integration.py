@@ -1,7 +1,6 @@
 # tests/test_integration.py
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from typing import Dict, Any
+from unittest.mock import patch, AsyncMock
 
 
 class TestResumeScreeningAgent:
@@ -40,33 +39,65 @@ class TestResumeScreeningAgent:
             "evaluation": EvaluationResult(
                 candidate_name="张三",
                 base_score=BaseScore(
-                    project_experience=DimensionScore(dimension="项目经历", score=25, max_score=30, reasoning="优秀"),
-                    internship_experience=DimensionScore(dimension="实习经历", score=20, max_score=25, reasoning="良好"),
-                    tech_stack=DimensionScore(dimension="技术栈", score=20, max_score=25, reasoning="扎实"),
-                    research_experience=DimensionScore(dimension="科研经历", score=15, max_score=20, reasoning="不错"),
-                    total_base_score=80.0
+                    project_experience=DimensionScore(
+                        dimension="项目经历", score=25, max_score=30, reasoning="优秀"
+                    ),
+                    internship_experience=DimensionScore(
+                        dimension="实习经历", score=20, max_score=25, reasoning="良好"
+                    ),
+                    tech_stack=DimensionScore(
+                        dimension="技术栈", score=20, max_score=25, reasoning="扎实"
+                    ),
+                    research_experience=DimensionScore(
+                        dimension="科研经历", score=15, max_score=20, reasoning="不错"
+                    ),
+                    total_base_score=80.0,
                 ),
-                bonus_score=BonusScore(competitions=["数学建模"], bonus_points=5, reasoning="有竞赛"),
+                bonus_score=BonusScore(
+                    competitions=["数学建模"], bonus_points=5, reasoning="有竞赛"
+                ),
                 final_score=85.0,
-                passed_screening=True
+                passed_screening=True,
             ),
             "should_generate_questions": True,
             "questions": InterviewQuestions(
                 candidate_name="张三",
                 basic_questions=[
-                    InterviewQuestion(level="basic", question="问题1", related_project="项目1", focus_area="技术细节"),
-                    InterviewQuestion(level="basic", question="问题2", related_project="项目1", focus_area="实现思路")
+                    InterviewQuestion(
+                        level="basic",
+                        question="问题1",
+                        related_project="项目1",
+                        focus_area="技术细节",
+                    ),
+                    InterviewQuestion(
+                        level="basic",
+                        question="问题2",
+                        related_project="项目1",
+                        focus_area="实现思路",
+                    ),
                 ],
                 advanced_questions=[
-                    InterviewQuestion(level="advanced", question="问题3", related_project="项目1", focus_area="系统设计"),
-                    InterviewQuestion(level="advanced", question="问题4", related_project="项目1", focus_area="优化方案")
-                ]
+                    InterviewQuestion(
+                        level="advanced",
+                        question="问题3",
+                        related_project="项目1",
+                        focus_area="系统设计",
+                    ),
+                    InterviewQuestion(
+                        level="advanced",
+                        question="问题4",
+                        related_project="项目1",
+                        focus_area="优化方案",
+                    ),
+                ],
             ),
-            "error": None
+            "error": None,
         }
 
         # Mock workflow.ainvoke
-        with patch.object(agent.workflow, 'ainvoke', new_callable=AsyncMock, return_value=mock_result):
+        with patch.object(
+            agent.workflow, "ainvoke", new_callable=AsyncMock, return_value=mock_result
+        ):
             result = await agent.screen_resume("test.pdf")
 
             assert result["evaluation"] is not None
@@ -90,23 +121,33 @@ class TestResumeScreeningAgent:
             "evaluation": EvaluationResult(
                 candidate_name="李四",
                 base_score=BaseScore(
-                    project_experience=DimensionScore(dimension="项目经历", score=15, max_score=30, reasoning="一般"),
-                    internship_experience=DimensionScore(dimension="实习经历", score=10, max_score=25, reasoning="较少"),
-                    tech_stack=DimensionScore(dimension="技术栈", score=12, max_score=25, reasoning="基础"),
-                    research_experience=DimensionScore(dimension="科研经历", score=5, max_score=20, reasoning="无"),
-                    total_base_score=42.0
+                    project_experience=DimensionScore(
+                        dimension="项目经历", score=15, max_score=30, reasoning="一般"
+                    ),
+                    internship_experience=DimensionScore(
+                        dimension="实习经历", score=10, max_score=25, reasoning="较少"
+                    ),
+                    tech_stack=DimensionScore(
+                        dimension="技术栈", score=12, max_score=25, reasoning="基础"
+                    ),
+                    research_experience=DimensionScore(
+                        dimension="科研经历", score=5, max_score=20, reasoning="无"
+                    ),
+                    total_base_score=42.0,
                 ),
                 bonus_score=BonusScore(competitions=[], bonus_points=0, reasoning="无竞赛"),
                 final_score=42.0,
-                passed_screening=False
+                passed_screening=False,
             ),
             "should_generate_questions": False,
             "questions": None,
-            "error": None
+            "error": None,
         }
 
         # Mock workflow.ainvoke
-        with patch.object(agent.workflow, 'ainvoke', new_callable=AsyncMock, return_value=mock_result):
+        with patch.object(
+            agent.workflow, "ainvoke", new_callable=AsyncMock, return_value=mock_result
+        ):
             result = await agent.screen_resume("test.pdf")
 
             assert result["evaluation"] is not None
@@ -122,9 +163,11 @@ class TestResumeScreeningAgent:
         agent = ResumeScreeningAgent(openai_api_key="test_key", threshold=70.0)
 
         # Mock workflow.ainvoke
-        mock_ainvoke = AsyncMock(return_value={"evaluation": None, "questions": None, "error": None})
+        mock_ainvoke = AsyncMock(
+            return_value={"evaluation": None, "questions": None, "error": None}
+        )
 
-        with patch.object(agent.workflow, 'ainvoke', mock_ainvoke):
+        with patch.object(agent.workflow, "ainvoke", mock_ainvoke):
             await agent.screen_resume("test.pdf", threshold=80.0)
 
             # 验证调用参数
@@ -145,23 +188,31 @@ class TestResumeScreeningAgent:
             "evaluation": EvaluationResult(
                 candidate_name="张三",
                 base_score=BaseScore(
-                    project_experience=DimensionScore(dimension="项目经历", score=25, max_score=30, reasoning="优秀"),
-                    internship_experience=DimensionScore(dimension="实习经历", score=20, max_score=25, reasoning="良好"),
-                    tech_stack=DimensionScore(dimension="技术栈", score=20, max_score=25, reasoning="扎实"),
-                    research_experience=DimensionScore(dimension="科研经历", score=15, max_score=20, reasoning="不错"),
-                    total_base_score=80.0
+                    project_experience=DimensionScore(
+                        dimension="项目经历", score=25, max_score=30, reasoning="优秀"
+                    ),
+                    internship_experience=DimensionScore(
+                        dimension="实习经历", score=20, max_score=25, reasoning="良好"
+                    ),
+                    tech_stack=DimensionScore(
+                        dimension="技术栈", score=20, max_score=25, reasoning="扎实"
+                    ),
+                    research_experience=DimensionScore(
+                        dimension="科研经历", score=15, max_score=20, reasoning="不错"
+                    ),
+                    total_base_score=80.0,
                 ),
                 bonus_score=BonusScore(competitions=[], bonus_points=0, reasoning="无"),
                 final_score=80.0,
-                passed_screening=True
+                passed_screening=True,
             ),
             "should_generate_questions": True,
             "questions": None,
-            "error": None
+            "error": None,
         }
 
         # Mock workflow.invoke
-        with patch.object(agent.workflow, 'invoke', return_value=mock_result):
+        with patch.object(agent.workflow, "invoke", return_value=mock_result):
             result = agent.screen_resume_sync("test.pdf")
 
             assert result["evaluation"] is not None
@@ -175,7 +226,7 @@ class TestResumeScreeningAgent:
         agent = ResumeScreeningAgent(openai_api_key="test_key", threshold=70.0)
 
         # Mock workflow抛出异常
-        with patch.object(agent.workflow, 'ainvoke', side_effect=Exception("Workflow error")):
+        with patch.object(agent.workflow, "ainvoke", side_effect=Exception("Workflow error")):
             with pytest.raises(Exception) as exc_info:
                 await agent.screen_resume("test.pdf")
 

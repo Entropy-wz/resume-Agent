@@ -1,5 +1,4 @@
 # src/__init__.py
-import asyncio
 from typing import Dict, Any, Optional
 
 from src.workflow import create_resume_screening_workflow
@@ -25,15 +24,14 @@ class ResumeScreeningAgent:
 
         # 设置环境变量
         import os
+
         os.environ["OPENAI_API_KEY"] = openai_api_key
 
         # 创建工作流
         self.workflow = create_resume_screening_workflow()
 
     async def screen_resume(
-        self,
-        resume_path: str,
-        threshold: Optional[float] = None
+        self, resume_path: str, threshold: Optional[float] = None
     ) -> Dict[str, Any]:
         """
         异步筛选简历
@@ -64,7 +62,7 @@ class ResumeScreeningAgent:
             "evaluation": None,
             "should_generate_questions": None,
             "questions": None,
-            "error": None
+            "error": None,
         }
 
         # 运行工作流
@@ -73,9 +71,7 @@ class ResumeScreeningAgent:
         return result
 
     def screen_resume_sync(
-        self,
-        resume_path: str,
-        threshold: Optional[float] = None
+        self, resume_path: str, threshold: Optional[float] = None
     ) -> Dict[str, Any]:
         """
         同步筛选简历
@@ -106,7 +102,7 @@ class ResumeScreeningAgent:
             "evaluation": None,
             "should_generate_questions": None,
             "questions": None,
-            "error": None
+            "error": None,
         }
 
         # 运行工作流（同步）

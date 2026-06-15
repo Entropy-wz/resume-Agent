@@ -23,14 +23,6 @@ def parse_resume_node(state: Dict[str, Any]) -> Dict[str, Any]:
         # 合并所有页面的文本
         resume_text = "\n".join([page.page_content for page in pages])
 
-        return {
-            **state,
-            "resume_text": resume_text,
-            "error": None
-        }
+        return {**state, "resume_text": resume_text, "error": None}
     except Exception as e:
-        return {
-            **state,
-            "resume_text": None,
-            "error": f"Error parsing PDF: {str(e)}"
-        }
+        return {**state, "resume_text": None, "error": f"Error parsing PDF: {str(e)}"}

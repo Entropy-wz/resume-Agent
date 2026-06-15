@@ -20,14 +20,6 @@ async def generate_questions_node(state: Dict[str, Any]) -> Dict[str, Any]:
         # 调用问题生成Agent
         questions = await generate_questions(resume_text, evaluation)
 
-        return {
-            **state,
-            "questions": questions,
-            "error": None
-        }
+        return {**state, "questions": questions, "error": None}
     except Exception as e:
-        return {
-            **state,
-            "questions": None,
-            "error": f"Error generating questions: {str(e)}"
-        }
+        return {**state, "questions": None, "error": f"Error generating questions: {str(e)}"}

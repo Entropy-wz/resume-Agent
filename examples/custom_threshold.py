@@ -1,14 +1,14 @@
 """
 自定义阈值示例：批量处理多个简历，使用不同的阈值
 """
-import asyncio
+
 from pathlib import Path
-from src.workflow import create_workflow
+from src.workflow import create_resume_screening_workflow
 
 
 async def process_resume(pdf_path: str, threshold: float):
     """处理单个简历"""
-    workflow = create_workflow()
+    workflow = create_resume_screening_workflow()
 
     initial_state = {
         "pdf_path": pdf_path,
@@ -38,9 +38,9 @@ async def batch_process():
         results.append((pdf_path, threshold, result))
 
     # 汇总结果
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("批量处理结果汇总")
-    print("="*60)
+    print("=" * 60)
 
     passed_count = 0
     for pdf_path, threshold, result in results:

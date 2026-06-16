@@ -32,3 +32,7 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# PDF files (resumes contain private information)
+*.pdf
+

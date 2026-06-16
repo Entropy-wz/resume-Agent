@@ -36,3 +36,6 @@ Thumbs.db
 # PDF files (resumes contain private information)
 *.pdf
 
+test_my_resume.py
+test_debug.py
+create_test_resume.py

@@ -7,8 +7,16 @@ from src import ResumeScreeningAgent
 
 async def test_resume():
     # 1. Initialize Agent (using Alibaba Cloud Qwen API)
+    # Read API key from environment variable
+    import os
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        print("ERROR: OPENAI_API_KEY environment variable not set")
+        print("Please set it with: export OPENAI_API_KEY=your-key-here")
+        return
+
     agent = ResumeScreeningAgent(
-        openai_api_key="sk-378c453bb0a04e6ab9a500452344d5a5",
+        openai_api_key=api_key,
         threshold=70.0
     )
 

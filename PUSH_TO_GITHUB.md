@@ -74,7 +74,7 @@ git push -u origin main
 
 你的 `.env` 文件配置：
 ```env
-OPENAI_API_KEY=sk-378c453bb0a04e6ab9a500452344d5a5
+OPENAI_API_KEY=your-api-key-here  # 请替换为你的实际API key
 OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 OPENAI_MODEL=qwen-plus
 ```

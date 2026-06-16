@@ -8,13 +8,13 @@ def parse_resume_node(state: Dict[str, Any]) -> Dict[str, Any]:
     PDF解析节点：从PDF文件中提取文本内容
 
     Args:
-        state: 工作流状态，需要包含 pdf_path
+        state: 工作流状态，需要包含 resume_path
 
     Returns:
         更新后的状态，包含 resume_text 或 error
     """
     try:
-        pdf_path = state["pdf_path"]
+        pdf_path = state["resume_path"]
 
         # 使用LangChain的PyPDFLoader加载PDF
         loader = PyPDFLoader(pdf_path)

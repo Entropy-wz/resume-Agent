@@ -82,15 +82,16 @@ EVALUATOR_SYSTEM_PROMPT = """
 
 def create_evaluator_agent() -> Agent[None, EvaluationResult]:
     """创建评分Agent"""
+    import os
     settings = get_settings()
 
+    # 设置环境变量供OpenAI SDK使用
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
+    os.environ["OPENAI_BASE_URL"] = settings.openai_base_url
+
     return Agent(
-        model=OpenAIModel(
-            settings.openai_model,
-            base_url=settings.openai_base_url,
-            api_key=settings.openai_api_key
-        ),
-        result_type=EvaluationResult,
+        model=OpenAIModel(settings.openai_model),
+        output_type=EvaluationResult,
         system_prompt=EVALUATOR_SYSTEM_PROMPT,
     )
 
@@ -119,8 +120,8 @@ async def evaluate_resume(resume_text: str, threshold: float = 70.0) -> Evaluati
 
     result = await agent.run(prompt)
 
-    # 确保passed_screening正确设置
-    evaluation = result.data
+    # 获取结构化输出数据
+    evaluation = result.output
     evaluation.passed_screening = evaluation.final_score >= threshold
 
     return evaluation

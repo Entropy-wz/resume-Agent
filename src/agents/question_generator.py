@@ -70,15 +70,16 @@ QUESTION_GENERATOR_SYSTEM_PROMPT = """
 
 def create_question_generator_agent() -> Agent[None, InterviewQuestions]:
     """创建问题生成Agent"""
+    import os
     settings = get_settings()
 
+    # 设置环境变量供OpenAI SDK使用
+    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
+    os.environ["OPENAI_BASE_URL"] = settings.openai_base_url
+
     return Agent(
-        model=OpenAIModel(
-            settings.openai_model,
-            base_url=settings.openai_base_url,
-            api_key=settings.openai_api_key
-        ),
-        result_type=InterviewQuestions,
+        model=OpenAIModel(settings.openai_model),
+        output_type=InterviewQuestions,
         system_prompt=QUESTION_GENERATOR_SYSTEM_PROMPT,
     )
 
@@ -115,4 +116,4 @@ async def generate_questions(resume_text: str, evaluation: EvaluationResult) -> 
 """
 
     result = await agent.run(prompt)
-    return result.data
+    return result.output

@@ -56,7 +56,7 @@ class ResumeScreeningAgent:
 
         # 初始化状态
         initial_state = {
-            "pdf_path": resume_path,
+            "resume_path": resume_path,
             "threshold": final_threshold,
             "resume_text": None,
             "evaluation": None,
@@ -96,7 +96,7 @@ class ResumeScreeningAgent:
 
         # 初始化状态
         initial_state = {
-            "pdf_path": resume_path,
+            "resume_path": resume_path,
             "threshold": final_threshold,
             "resume_text": None,
             "evaluation": None,

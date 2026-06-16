@@ -14,8 +14,23 @@ async def generate_questions_node(state: Dict[str, Any]) -> Dict[str, Any]:
         更新后的状态，包含 questions 或 error
     """
     try:
-        resume_text = state["resume_text"]
-        evaluation = state["evaluation"]
+        # 提前检查：如果没有必需数据，直接返回错误
+        resume_text = state.get("resume_text")
+        evaluation = state.get("evaluation")
+
+        if not resume_text:
+            return {
+                **state,
+                "questions": None,
+                "error": "Error: No resume text available for question generation",
+            }
+
+        if not evaluation:
+            return {
+                **state,
+                "questions": None,
+                "error": "Error: No evaluation available for question generation",
+            }
 
         # 调用问题生成Agent
         questions = await generate_questions(resume_text, evaluation)

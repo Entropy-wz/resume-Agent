@@ -2,17 +2,24 @@
 Test Resume Screening Agent - No Emoji Version
 """
 import asyncio
+import os
+from pathlib import Path
+
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv()
+
 from src import ResumeScreeningAgent
 
 
 async def test_resume():
     # 1. Initialize Agent (using Alibaba Cloud Qwen API)
     # Read API key from environment variable
-    import os
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         print("ERROR: OPENAI_API_KEY environment variable not set")
-        print("Please set it with: export OPENAI_API_KEY=your-key-here")
+        print("Please check your .env file in the project root directory")
+        print(f"Expected location: {Path.cwd() / '.env'}")
         return
 
     agent = ResumeScreeningAgent(

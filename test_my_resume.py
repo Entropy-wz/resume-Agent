@@ -13,7 +13,7 @@ async def test_resume():
     )
 
     # 2. Specify your resume PDF path
-    resume_path = "your_resume.pdf"
+    resume_path = "test_pass_resume.pdf"  # High-score test resume
 
     print(f"Start analyzing: {resume_path}")
     print("-" * 50)

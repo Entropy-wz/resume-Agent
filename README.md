@@ -46,7 +46,7 @@ async def main():
     
     # 准备初始状态
     initial_state = {
-        "pdf_path": "path/to/resume.pdf",
+        "resume_path": "path/to/resume.pdf",
         "threshold": 70.0,
     }
     

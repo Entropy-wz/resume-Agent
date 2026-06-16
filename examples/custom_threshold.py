@@ -6,12 +6,12 @@ from pathlib import Path
 from src.workflow import create_resume_screening_workflow
 
 
-async def process_resume(pdf_path: str, threshold: float):
+async def process_resume(resume_path: str, threshold: float):
     """处理单个简历"""
     workflow = create_resume_screening_workflow()
 
     initial_state = {
-        "pdf_path": pdf_path,
+        "resume_path": resume_path,  # 使用resume_path
         "threshold": threshold,
     }
 
@@ -29,81 +29,62 @@ async def batch_process():
         ("resumes/candidate3.pdf", 60.0),  # 实习生岗位
     ]
 
-    print("开始批量处理简历...\n")
-
     results = []
-    for pdf_path, threshold in resumes:
-        print(f"处理: {pdf_path} (阈值: {threshold})")
-        result = await process_resume(pdf_path, threshold)
-        results.append((pdf_path, threshold, result))
 
-    # 汇总结果
-    print("\n" + "=" * 60)
-    print("批量处理结果汇总")
-    print("=" * 60)
+    for resume_path, threshold in resumes:
+        print(f"处理: {resume_path} (阈值: {threshold})")
+        result = await process_resume(resume_path, threshold)
+        results.append((resume_path, threshold, result))
 
-    passed_count = 0
-    for pdf_path, threshold, result in results:
+    # 输出结果
+    for resume_path, threshold, result in results:
         evaluation = result.get("evaluation")
         if evaluation:
-            passed = evaluation.passed_screening
-            passed_count += passed
-            status = "✅ 通过" if passed else "❌ 未通过"
-            print(f"\n{Path(pdf_path).name}")
-            print(f"  候选人: {evaluation.candidate_name}")
-            print(f"  总分: {evaluation.final_score}/115")
+            print(f"\n{Path(resume_path).name}")
             print(f"  阈值: {threshold}")
-            print(f"  结果: {status}")
-
-    print(f"\n总计: {len(results)}份简历, {passed_count}份通过初筛")
+            print(f"  得分: {evaluation.final_score}/115")
+            print(f"  结果: {'通过' if evaluation.passed_screening else '未通过'}")
 
 
 async def dynamic_threshold():
     """动态调整阈值示例"""
 
-    pdf_path = "resumes/candidate.pdf"
+    resume_path = "resumes/candidate.pdf"
 
-    # 先用标准阈值评估
-    print("使用标准阈值(70分)评估...")
-    result1 = await process_resume(pdf_path, 70.0)
+    # 先用标准阈值试试
+    print(f"使用标准阈值70分评估 {resume_path}...")
+    result1 = await process_resume(resume_path, 70.0)
 
-    evaluation = result1.get("evaluation")
-    if not evaluation:
-        print("评估失败")
-        return
+    evaluation1 = result1.get("evaluation")
+    if not evaluation1.passed_screening:
+        # 如果没通过，尝试降低阈值
+        print(f"\n候选人得分 {evaluation1.final_score}，未达到70分")
+        print("尝试使用60分阈值重新评估...")
 
-    print(f"候选人: {evaluation.candidate_name}")
-    print(f"总分: {evaluation.final_score}/115")
+        result2 = await process_resume(resume_path, 60.0)
+        evaluation2 = result2.get("evaluation")
 
-    # 根据分数动态调整
-    if evaluation.final_score >= 90:
-        print("\n候选人优秀，推荐进入高级岗位面试")
-    elif evaluation.final_score >= 70:
-        print("\n候选人合格，推荐进入标准面试流程")
-        # 生成面试问题
-        if result1.get("questions"):
-            print(f"已生成{len(result1['questions'].basic_questions)}道基础题")
-            print(f"已生成{len(result1['questions'].advanced_questions)}道进阶题")
+        if evaluation2.passed_screening:
+            print(f"使用60分阈值通过初筛")
+            print("建议: 可以安排面试，但需要重点考察弱项")
+        else:
+            print(f"即使降低到60分也未通过")
+            print("建议: 不予考虑")
     else:
-        print(f"\n候选人分数较低({evaluation.final_score}分)")
-        print("建议:")
-        print("  1. 如果是实习生岗位，可以考虑降低阈值到60分")
-        print("  2. 如果是正式岗位，建议不予考虑")
-
-        # 尝试用实习生标准重新评估
-        print("\n使用实习生标准(60分)重新评估...")
-        result2 = await process_resume(pdf_path, 60.0)
-        if result2.get("evaluation").passed_screening:
-            print("✅ 符合实习生岗位要求")
+        print(f"候选人得分 {evaluation1.final_score}，通过70分阈值")
+        questions = result1.get("questions")
+        if questions:
+            print(f"\n已生成 {len(questions.basic_questions)} 个基础题")
+            print(f"已生成 {len(questions.advanced_questions)} 个进阶题")
 
 
 if __name__ == "__main__":
-    print("示例1: 批量处理")
-    print("-" * 60)
-    # asyncio.run(batch_process())
+    import asyncio
 
-    print("\n\n示例2: 动态阈值")
-    print("-" * 60)
-    # asyncio.run(dynamic_threshold())
+    print("=== 批量处理示例 ===")
+    # asyncio.run(batch_process())  # 取消注释以运行
 
-    print("\n注意: 请取消注释上面的代码并提供实际的PDF文件路径来运行")
+    print("\n=== 动态阈值示例 ===")
+    # asyncio.run(dynamic_threshold())  # 取消注释以运行
+
+    print("\n注意: 请取消注释上面的代码并提供实际的PDF文件路径")

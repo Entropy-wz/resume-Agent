@@ -66,7 +66,7 @@ async def test_complete_workflow_with_mock_resume():
 
     # 准备初始状态（绕过PDF解析，直接提供文本）
     initial_state = {
-        "pdf_path": "mock_resume.pdf",  # 虽然不会真的解析，但需要提供
+        "resume_path": "mock_resume.pdf",  # 虽然不会真的解析，但需要提供
         "resume_text": mock_resume_text,  # 直接提供文本
         "threshold": 70.0,
     }
@@ -95,7 +95,7 @@ async def test_complete_workflow_with_mock_resume():
     assert abs(base_total - evaluation.base_score.total_base_score) < 0.01, "基础分总和不一致"
 
     expected_final = (
-        evaluation.base_score.total_base_score + evaluation.bonus_score.competition_bonus.score
+        evaluation.base_score.total_base_score + evaluation.bonus_score.bonus_points
     )
     assert abs(expected_final - evaluation.final_score) < 0.01, "最终分数计算错误"
 
@@ -121,7 +121,7 @@ async def test_complete_workflow_with_mock_resume():
 async def test_workflow_with_different_thresholds():
     """测试不同阈值下的工作流行为"""
 
-    workflow = create_workflow()
+    workflow = create_resume_screening_workflow()
 
     mock_resume_text = """
     李四
@@ -141,7 +141,7 @@ async def test_workflow_with_different_thresholds():
 
     # 测试高阈值（应该不通过）
     high_threshold_state = {
-        "pdf_path": "mock_resume.pdf",
+        "resume_path": "mock_resume.pdf",
         "resume_text": mock_resume_text,
         "threshold": 80.0,
     }
@@ -157,7 +157,7 @@ async def test_workflow_with_different_thresholds():
 
     # 测试低阈值（可能通过）
     low_threshold_state = {
-        "pdf_path": "mock_resume.pdf",
+        "resume_path": "mock_resume.pdf",
         "resume_text": mock_resume_text,
         "threshold": 40.0,
     }
@@ -177,11 +177,11 @@ async def test_workflow_with_different_thresholds():
 async def test_workflow_handles_empty_resume():
     """测试工作流处理空简历的情况"""
 
-    workflow = create_workflow()
+    workflow = create_resume_screening_workflow()
 
     # 空简历文本
     empty_resume_state = {
-        "pdf_path": "empty_resume.pdf",
+        "resume_path": "empty_resume.pdf",
         "resume_text": "",
         "threshold": 70.0,
     }
@@ -200,7 +200,7 @@ async def test_workflow_handles_empty_resume():
 async def test_evaluation_score_ranges():
     """测试评分结果的范围约束"""
 
-    workflow = create_workflow()
+    workflow = create_resume_screening_workflow()
 
     # 优秀简历示例
     excellent_resume = """
@@ -245,7 +245,7 @@ async def test_evaluation_score_ranges():
     """
 
     state = {
-        "pdf_path": "excellent_resume.pdf",
+        "resume_path": "excellent_resume.pdf",
         "resume_text": excellent_resume,
         "threshold": 70.0,
     }
@@ -260,7 +260,7 @@ async def test_evaluation_score_ranges():
     assert 0 <= evaluation.base_score.internship_experience.score <= 25
     assert 0 <= evaluation.base_score.tech_stack.score <= 25
     assert 0 <= evaluation.base_score.research_experience.score <= 20
-    assert 0 <= evaluation.bonus_score.competition_bonus.score <= 15
+    assert 0 <= evaluation.bonus_score.bonus_points <= 15
 
     # 验证总分逻辑
     assert 0 <= evaluation.base_score.total_base_score <= 100
@@ -281,7 +281,7 @@ async def test_evaluation_score_ranges():
 async def test_question_quality():
     """测试生成的面试问题质量"""
 
-    workflow = create_workflow()
+    workflow = create_resume_screening_workflow()
 
     resume_with_specific_project = """
     赵六
@@ -300,7 +300,7 @@ async def test_question_quality():
     """
 
     state = {
-        "pdf_path": "resume.pdf",
+        "resume_path": "resume.pdf",
         "resume_text": resume_with_specific_project,
         "threshold": 50.0,  # 设置较低阈值确保生成问题
     }

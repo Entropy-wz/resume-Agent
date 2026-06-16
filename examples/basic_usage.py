@@ -12,7 +12,7 @@ async def main():
 
     # 准备初始状态
     initial_state = {
-        "pdf_path": "path/to/resume.pdf",
+        "resume_path": "path/to/resume.pdf",  # 使用resume_path
         "threshold": 70.0,  # 初筛阈值
     }
 
@@ -38,7 +38,7 @@ async def main():
         print(f"  实习经历: {evaluation.base_score.internship_experience.score}/25")
         print(f"  技术栈: {evaluation.base_score.tech_stack.score}/25")
         print(f"  科研经历: {evaluation.base_score.research_experience.score}/20")
-        print(f"  竞赛加分: {evaluation.bonus_score.competition_bonus.score}/15")
+        print(f"  竞赛加分: {evaluation.bonus_score.bonus_points}/15")
 
     # 输出面试问题
     questions = final_state.get("questions")

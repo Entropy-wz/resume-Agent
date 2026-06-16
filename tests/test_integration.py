@@ -34,7 +34,7 @@ class TestResumeScreeningAgent:
 
         # Mock workflow结果
         mock_result = {
-            "pdf_path": "test.pdf",
+            "resume_path": "test.pdf",
             "resume_text": "姓名：张三\n项目经历：量化CTA策略开发",
             "evaluation": EvaluationResult(
                 candidate_name="张三",
@@ -116,7 +116,7 @@ class TestResumeScreeningAgent:
 
         # Mock workflow结果
         mock_result = {
-            "pdf_path": "test.pdf",
+            "resume_path": "test.pdf",
             "resume_text": "姓名：李四\n项目经历：较少",
             "evaluation": EvaluationResult(
                 candidate_name="李四",
@@ -183,7 +183,7 @@ class TestResumeScreeningAgent:
 
         # Mock workflow结果
         mock_result = {
-            "pdf_path": "test.pdf",
+            "resume_path": "test.pdf",
             "resume_text": "姓名：张三",
             "evaluation": EvaluationResult(
                 candidate_name="张三",

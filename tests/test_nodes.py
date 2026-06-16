@@ -11,7 +11,7 @@ class TestParserNode:
         from src.nodes.parser import parse_resume_node
 
         # Mock state with PDF path
-        state = {"pdf_path": "test.pdf", "resume_text": None, "error": None}
+        state = {"resume_path": "test.pdf", "resume_text": None, "error": None}
 
         # Mock PyPDFLoader
         with patch("src.nodes.parser.PyPDFLoader") as mock_loader:
@@ -32,7 +32,7 @@ class TestParserNode:
         """测试PDF解析失败"""
         from src.nodes.parser import parse_resume_node
 
-        state = {"pdf_path": "nonexistent.pdf", "resume_text": None, "error": None}
+        state = {"resume_path": "nonexistent.pdf", "resume_text": None, "error": None}
 
         with patch("src.nodes.parser.PyPDFLoader") as mock_loader:
             mock_loader.side_effect = Exception("File not found")
@@ -47,7 +47,7 @@ class TestParserNode:
         """测试空PDF"""
         from src.nodes.parser import parse_resume_node
 
-        state = {"pdf_path": "empty.pdf", "resume_text": None, "error": None}
+        state = {"resume_path": "empty.pdf", "resume_text": None, "error": None}
 
         with patch("src.nodes.parser.PyPDFLoader") as mock_loader:
             mock_instance = Mock()

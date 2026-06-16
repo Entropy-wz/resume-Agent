@@ -122,6 +122,7 @@ async def evaluate_resume(resume_text: str, threshold: float = 70.0) -> Evaluati
 
     # 获取结构化输出数据
     evaluation = result.output
-    evaluation.passed_screening = evaluation.final_score >= threshold
+    # 注意：passed_screening将由check_threshold_node统一设置
+    # 这里不再设置，避免职责重复
 
     return evaluation

@@ -80,34 +80,49 @@ EVALUATOR_SYSTEM_PROMPT = """
 """
 
 
-def create_evaluator_agent() -> Agent[None, EvaluationResult]:
-    """创建评分Agent"""
-    import os
-    settings = get_settings()
+def create_evaluator_agent(api_key: str, base_url: str) -> Agent[None, EvaluationResult]:
+    """
+    创建评分Agent
 
-    # 设置环境变量供OpenAI SDK使用
-    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
-    os.environ["OPENAI_BASE_URL"] = settings.openai_base_url
+    Args:
+        api_key: OpenAI API密钥
+        base_url: OpenAI API base URL
+    """
+    from openai import AsyncOpenAI
+    from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+
+    # 创建自定义OpenAI provider
+    provider = OpenAIProvider(
+        openai_client=AsyncOpenAI(
+            base_url=base_url,
+            api_key=api_key
+        )
+    )
+
+    # 不再设置环境变量！
 
     return Agent(
-        model=OpenAIModel(settings.openai_model),
+        model=OpenAIChatModel("qwen-plus", provider=provider),
         output_type=EvaluationResult,
         system_prompt=EVALUATOR_SYSTEM_PROMPT,
     )
 
 
-async def evaluate_resume(resume_text: str, threshold: float = 70.0) -> EvaluationResult:
+async def evaluate_resume(resume_text: str, threshold: float = 70.0, api_key: str = None, base_url: str = None) -> EvaluationResult:
     """
     评估简历
 
     Args:
         resume_text: 简历文本内容
         threshold: 初筛阈值
+        api_key: OpenAI API密钥
+        base_url: OpenAI API base URL
 
     Returns:
         EvaluationResult: 评估结果
     """
-    agent = create_evaluator_agent()
+    agent = create_evaluator_agent(api_key, base_url)
 
     prompt = f"""
 请评估以下简历：

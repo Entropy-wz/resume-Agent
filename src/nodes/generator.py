@@ -8,7 +8,7 @@ async def generate_questions_node(state: Dict[str, Any]) -> Dict[str, Any]:
     题目生成节点：调用问题生成Agent生成面试问题
 
     Args:
-        state: 工作流状态，需要包含 resume_text 和 evaluation
+        state: 工作流状态，需要包含 resume_text, evaluation, api_key, api_base_url
 
     Returns:
         更新后的状态，包含 questions 或 error
@@ -32,8 +32,11 @@ async def generate_questions_node(state: Dict[str, Any]) -> Dict[str, Any]:
                 "error": "Error: No evaluation available for question generation",
             }
 
-        # 调用问题生成Agent
-        questions = await generate_questions(resume_text, evaluation)
+        api_key = state.get("api_key")
+        api_base_url = state.get("api_base_url")
+
+        # 调用问题生成Agent（传递API配置）
+        questions = await generate_questions(resume_text, evaluation, api_key, api_base_url)
 
         return {**state, "questions": questions, "error": None}
     except Exception as e:

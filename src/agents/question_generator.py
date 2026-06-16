@@ -68,34 +68,49 @@ QUESTION_GENERATOR_SYSTEM_PROMPT = """
 """
 
 
-def create_question_generator_agent() -> Agent[None, InterviewQuestions]:
-    """创建问题生成Agent"""
-    import os
-    settings = get_settings()
+def create_question_generator_agent(api_key: str, base_url: str) -> Agent[None, InterviewQuestions]:
+    """
+    创建问题生成Agent
 
-    # 设置环境变量供OpenAI SDK使用
-    os.environ["OPENAI_API_KEY"] = settings.openai_api_key
-    os.environ["OPENAI_BASE_URL"] = settings.openai_base_url
+    Args:
+        api_key: OpenAI API密钥
+        base_url: OpenAI API base URL
+    """
+    from openai import AsyncOpenAI
+    from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+
+    # 创建自定义OpenAI provider
+    provider = OpenAIProvider(
+        openai_client=AsyncOpenAI(
+            base_url=base_url,
+            api_key=api_key
+        )
+    )
+
+    # 不再设置环境变量！
 
     return Agent(
-        model=OpenAIModel(settings.openai_model),
+        model=OpenAIChatModel("qwen-plus", provider=provider),
         output_type=InterviewQuestions,
         system_prompt=QUESTION_GENERATOR_SYSTEM_PROMPT,
     )
 
 
-async def generate_questions(resume_text: str, evaluation: EvaluationResult) -> InterviewQuestions:
+async def generate_questions(resume_text: str, evaluation: EvaluationResult, api_key: str, base_url: str) -> InterviewQuestions:
     """
     生成面试问题
 
     Args:
         resume_text: 简历文本内容
         evaluation: 简历评估结果
+        api_key: OpenAI API密钥
+        base_url: OpenAI API base URL
 
     Returns:
         InterviewQuestions: 面试问题集
     """
-    agent = create_question_generator_agent()
+    agent = create_question_generator_agent(api_key, base_url)
 
     prompt = f"""
 请为以下候选人生成面试问题：

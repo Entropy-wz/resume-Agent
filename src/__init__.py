@@ -11,21 +11,24 @@ class ResumeScreeningAgent:
     提供异步和同步两种方式来筛选简历。
     """
 
-    def __init__(self, openai_api_key: str, threshold: float = 70.0):
+    def __init__(self, openai_api_key: str, threshold: float = 70.0, openai_base_url: str = None):
         """
         初始化简历筛选Agent
 
         Args:
             openai_api_key: OpenAI API密钥
             threshold: 筛选阈值，默认70.0
+            openai_base_url: OpenAI API base URL (可选，默认从环境变量读取)
         """
         self.openai_api_key = openai_api_key
         self.threshold = threshold
 
-        # 设置环境变量
+        # 从环境变量读取base_url（如果未提供）
         import os
+        self.openai_base_url = openai_base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
 
-        os.environ["OPENAI_API_KEY"] = openai_api_key
+        # 不再设置环境变量！API key通过参数传递
+        # 移除: os.environ["OPENAI_API_KEY"] = openai_api_key
 
         # 创建工作流
         self.workflow = create_resume_screening_workflow()
@@ -43,7 +46,7 @@ class ResumeScreeningAgent:
         Returns:
             包含评估结果和面试题目（如果通过初筛）的字典
             {
-                "pdf_path": str,
+                "resume_path": str,
                 "resume_text": str,
                 "evaluation": EvaluationResult,
                 "questions": InterviewQuestions | None,
@@ -54,7 +57,7 @@ class ResumeScreeningAgent:
         # 使用提供的阈值或默认阈值
         final_threshold = threshold if threshold is not None else self.threshold
 
-        # 初始化状态
+        # 初始化状态（包含API配置）
         initial_state = {
             "resume_path": resume_path,
             "threshold": final_threshold,
@@ -63,6 +66,9 @@ class ResumeScreeningAgent:
             "should_generate_questions": None,
             "questions": None,
             "error": None,
+            # API配置通过state传递（避免环境变量污染）
+            "api_key": self.openai_api_key,
+            "api_base_url": self.openai_base_url,
         }
 
         # 运行工作流
@@ -83,7 +89,7 @@ class ResumeScreeningAgent:
         Returns:
             包含评估结果和面试题目（如果通过初筛）的字典
             {
-                "pdf_path": str,
+                "resume_path": str,
                 "resume_text": str,
                 "evaluation": EvaluationResult,
                 "questions": InterviewQuestions | None,
@@ -94,7 +100,7 @@ class ResumeScreeningAgent:
         # 使用提供的阈值或默认阈值
         final_threshold = threshold if threshold is not None else self.threshold
 
-        # 初始化状态
+        # 初始化状态（包含API配置）
         initial_state = {
             "resume_path": resume_path,
             "threshold": final_threshold,
@@ -103,6 +109,9 @@ class ResumeScreeningAgent:
             "should_generate_questions": None,
             "questions": None,
             "error": None,
+            # API配置通过state传递（避免环境变量污染）
+            "api_key": self.openai_api_key,
+            "api_base_url": self.openai_base_url,
         }
 
         # 运行工作流（同步）

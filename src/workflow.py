@@ -2,6 +2,7 @@
 from typing import Dict, Any, Literal
 from langgraph.graph import StateGraph, END
 
+from src.state import WorkflowState
 from src.nodes.parser import parse_resume_node
 from src.nodes.evaluator import evaluate_resume_node
 from src.nodes.checker import check_threshold_node
@@ -57,8 +58,8 @@ def create_resume_screening_workflow():
     Returns:
         CompiledGraph: 编译后的LangGraph工作流
     """
-    # 创建StateGraph
-    workflow = StateGraph(dict)
+    # 创建StateGraph with typed state schema
+    workflow = StateGraph(WorkflowState)
 
     # 添加节点
     workflow.add_node("parse_resume", parse_resume_node)

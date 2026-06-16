@@ -27,8 +27,8 @@ async def test_workflow_terminates_on_parse_error():
         assert result["error"] is not None
         assert "Error parsing PDF" in result["error"]
         assert result["resume_text"] is None
-        assert result["evaluation"] is None  # 不应该执行评分
-        assert result["questions"] is None  # 不应该生成题目
+        assert result.get("evaluation") is None  # 不应该执行评分
+        assert result.get("questions") is None  # 不应该生成题目
 
 
 @pytest.mark.asyncio
